@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>园区月卡管理（添加） </title>
+<style>
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Microsoft YaHei",sans-serif;
+}
+  body{
+    display:flex;
+    height:100vh;
+    overflow:hidden;
+    background:#f3f3f4;
+}
+  .sidebar{
+    width:220px;
+    background:#2f4050;
+    color:#fff;
+    transition:width .3s;
+    flex-shrink:0;
+}
+  .sidebar.collapse{
+    width:60px;
+}
+  .sidebar .logo{
+    height:60px;
+    line-height:60px;
+    text-align:center;
+    font-size:17px;
+    border-bottom:1px solid #384c60;
+    white-space:nowrap;
+    overflow:hidden;
+}
+  .sidebar ul{list-style:none; margin-top:10px;}
+  .sidebar li a{display:block;height:48px;line-height:48px;color:#aebcc8;text-decoration:none;padding:0 20px;white-space:nowrap;overflow:hidden;}
+  .sidebar li a.active{background:#1ab394;color:#fff;}
+  .sidebar li a:hover{background:#384c60;color:#fff;}
+  .main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+}
+  .header{
+    height:60px;
+    background:#fff;
+    border-bottom:1px solid #e7eaec;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    flex-shrink:0;
+}
+  .fold-btn{
+    cursor:pointer;
+    padding:6px 14px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    background:#fff;
+}
+  .account{
+    font-size:14px;
+    color:#444;
+}
+  .content{
+    flex:1;
+    padding:20px;
+    overflow:auto;
+}
+  /* 表单卡片 */
+  .form-card{
+    background:#fff;
+    border-radius:6px;
+    padding:24px 30px;
+    max-width:620px;
+}
+  .form-card h3{
+    border-bottom:1px solid #eef0f2;
+    padding-bottom:12px;
+    margin-bottom:18px;
+    color:#2f4050;
+}
+  .form-item{
+    display:flex;
+    align-items:center;
+    margin-bottom:16px;
+}
+  .form-item label{
+    width:110px;
+    color:#555;
+    flex-shrink:0;
+    text-align:right;
+    padding-right:12px;
+}
+  .form-item input{
+    flex:1;
+    max-width:360px;
+    padding:8px;
+    border:1px solid #ccc;
+    border-radius:4px;
+}
+  .form-item .err{
+    width:100%;
+    margin-left:110px;
+    color:#e74c3c;
+    font-size:12px;
+    display:none;
+    padding-top:4px;
+}
+  .readonly-tip{
+    font-size:12px;
+    color:#999;
+}
+  .calc-info{
+    background:#f5fbf9;
+    border:1px solid #cdeee2;
+    border-radius:4px;
+    padding:10px 16px;
+    margin-bottom:16px;
+    color:#2f7d5b;
+    font-size:13px;
+}
+  .form-foot{
+    margin-top:22px;
+    padding-left:122px;
+}
+  .btn{
+    padding:8px 26px;
+    border-radius:4px;
+    cursor:pointer;
+    border:1px solid transparent;
+}
+  .btn-save{
+    background:#1ab394;
+    color:#fff;
+}
+  .btn-reset{
+    background:#fff;
+    color:#555;
+    border-color:#ccc;
+    margin-left:12px;
+}
+  .btn-back{
+    background:#fff;
+    color:#555;
+    border-color:#ccc;
+    margin-left:12px;
+    }
+</style>
+</head>
+<body>
+  <div class="sidebar" id="sidebar">
+    <div class="logo">园区月卡后台</div>
+    <ul>
+      <li><a href="index.html" class="menu-item">首页</a></li>
+      <li><a href="monthCard.html" class="menu-item">月卡管理</a></li>
+    </ul>
+  </div>
+  <div class="main">
+    <div class="header">
+      <button class="fold-btn" id="foldBtn">☰ 折叠菜单</button>
+      <span class="account">登录账号：admin</span>
+    </div>
+    <div class="content">
+      <div class="form-card">
+        <h3 id="pageTitle">新增月卡</h3>
+        <div class="calc-info" id="calcInfo">剩余有效天数：— 天　|　月卡状态：—</div>
+
+        <div class="form-item">
+          <label>车牌号 <b style="color:#e74c3c">*</b></label>
+          <input type="text" id="carNo" placeholder="如：赣A12345">
+          <div class="err" id="errCar">请输入正确的国内车牌号</div>
+        </div>
+        <div class="form-item">
+          <label>车主姓名 <b style="color:#e74c3c">*</b></label>
+          <input type="text" id="owner" placeholder="如：张三">
+          <div class="err" id="errOwner">请输入车主姓名</div>
+        </div>
+        <div class="form-item">
+          <label>手机号 <b style="color:#e74c3c">*</b></label>
+          <input type="text" id="phone" placeholder="11位手机号">
+          <div class="err" id="errPhone">请输入正确的11位手机号</div>
+        </div>
+        <div class="form-item">
+          <label>月卡类型 <b style="color:#e74c3c">*</b></label>
+          <input type="text" id="cardType" placeholder="如：月度 / 季度">
+          <div class="err" id="errType">请输入月卡类型</div>
+        </div>
+        <div class="form-item">
+          <label>缴费金额(元) <b style="color:#e74c3c">*</b></label>
+          <input type="number" id="fee" min="0" placeholder="如：300">
+          <div class="err" id="errFee">请输入正确的缴费金额</div>
+        </div>
+        <div class="form-item">
+          <label>开始日期 <b style="color:#e74c3c">*</b></label>
+          <input type="date" id="startTime">
+          <div class="err" id="errStart">请选择开始日期</div>
+        </div>
+        <div class="form-item">
+          <label>结束日期 <b style="color:#e74c3c">*</b></label>
+          <input type="date" id="endTime">
+          <div class="err" id="errEnd">请选择结束日期（须晚于开始日期）</div>
+        </div>
+
+        <div class="form-foot">
+          <button class="btn btn-save" id="saveBtn">保 存</button>
+          <button class="btn btn-reset" id="resetBtn">重 置</button>
+          <button class="btn btn-back" onclick="location.href='monthCard.html'">返回列表</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+<script>
+/* ===== 公共：折叠 + 高亮 ===== */
+document.getElementById('foldBtn').addEventListener('click', function(){ document.getElementById('sidebar').classList.toggle('collapse'); });
+(function(){ var page=location.pathname.split('/').pop()||'index.html'; document.querySelectorAll('.menu-item').forEach(function(a){ if(a.getAttribute('href')===page) a.classList.add('active'); }); })();
+
+/* ===== 公共：localStorage 数据源 ===== */
+var STORAGE_KEY='park_month_card';
+var defaultMockData=[
+  {id:1,carNo:'赣A12345',owner:'张三',phone:'13800138000',cardType:'月度',fee:300,startTime:'2026-07-01',endTime:'2026-10-01',status:'有效'},
+  {id:2,carNo:'赣B67890',owner:'李四',phone:'13900139000',cardType:'季度',fee:800,startTime:'2026-06-01',endTime:'2026-08-01',status:'过期'},
+  {id:3,carNo:'粤C24680',owner:'王五',phone:'13700137000',cardType:'月度',fee:300,startTime:'2026-08-01',endTime:'2026-11-01',status:'有效'},
+  {id:4,carNo:'浙D13579',owner:'赵六',phone:'13600136000',cardType:'月度',fee:300,startTime:'2026-05-01',endTime:'2026-06-01',status:'过期'},
+  {id:5,carNo:'苏E99999',owner:'孙七',phone:'13500135000',cardType:'季度',fee:800,startTime:'2026-07-15',endTime:'2026-12-15',status:'有效'},
+  {id:6,carNo:'沪F88888',owner:'周八',phone:'13400134000',cardType:'月度',fee:300,startTime:'2026-09-01',endTime:'2026-10-01',status:'有效'}
+];
+function getMonthCardList(){ var d=localStorage.getItem(STORAGE_KEY); if(!d){ saveMonthCardList(defaultMockData); return JSON.parse(JSON.stringify(defaultMockData)); } return JSON.parse(d); }
+function saveMonthCardList(l){ localStorage.setItem(STORAGE_KEY, JSON.stringify(l)); }
+function getCardById(id){ return getMonthCardList().find(function(i){ return i.id===Number(id); }); }
+function calcRemainDays(s){ var e=new Date(s);e.setHours(0,0,0,0);var n=new Date();n.setHours(0,0,0,0);return Math.ceil((e.getTime()-n.getTime())/(1000*60*60*24)); }
+function getCardStatus(s){ return calcRemainDays(s)>=0?'有效':'过期'; }
+
+/* ===== 正则校验 ===== */
+var regCar=/^[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-HJ-NP-Z]{1}[A-HJ-NP-Z]{1}[A-HJ-NP-Z0-9]{5}[A-HJ-NP-Z0-9挂学警港澳]{1}$/;
+var regPhone=/^1[3-9]\d{9}$/;
+
+/* ===== URL 参数读取：区分新增/编辑模式 ===== */
+function getUrlParam(name){
+  var qs=location.search.substring(1).split('&');
+  for(var i=0;i<qs.length;i++){
+    var kv=qs[i].split('=');
+    if(kv[0]===name) return decodeURIComponent(kv[1]||'');
+  }
+  return null;
+}
+var editId=getUrlParam('id');
+var isEdit=editId!==null && editId!=='';
+
+window.onload=function(){
+  if(isEdit){
+    var data=getCardById(editId);
+    document.getElementById('pageTitle').innerText='编辑月卡';
+    document.getElementById('carNo').value=data.carNo;
+    document.getElementById('owner').value=data.owner;
+    document.getElementById('phone').value=data.phone;
+    document.getElementById('cardType').value=data.cardType;
+    document.getElementById('fee').value=data.fee;
+    document.getElementById('startTime').value=data.startTime;
+    document.getElementById('endTime').value=data.endTime;
+  }
+  refreshCalc();
+  bindForm();
+};
+
+/* ===== 实时计算剩余天数与状态 ===== */
+function refreshCalc(){
+  var end=document.getElementById('endTime').value;
+  var info=document.getElementById('calcInfo');
+  if(!end){ info.innerHTML='剩余有效天数：— 天　|　月卡状态：—'; return; }
+  var days=calcRemainDays(end);
+  var status=getCardStatus(end);
+  info.innerHTML='剩余有效天数：<b>'+days+'</b> 天　|　月卡状态：<b>'+status+'</b>';
+}
+function bindForm(){
+  document.getElementById('endTime').addEventListener('change',refreshCalc);
+  document.getElementById('startTime').addEventListener('change',function(){
+    var s=this.value,e=document.getElementById('endTime').value;
+    if(s && e && e<=s){ document.getElementById('endTime').value=''; }
+    refreshCalc();
+  });
+  document.getElementById('resetBtn').addEventListener('click',function(){
+    document.getElementById('carNo').value='';
+    document.getElementById('owner').value='';
+    document.getElementById('phone').value='';
+    document.getElementById('cardType').value='';
+    document.getElementById('fee').value='';
+    document.getElementById('startTime').value='';
+    document.getElementById('endTime').value='';
+    hideAllErr();
+    refreshCalc();
+  });
+  document.getElementById('saveBtn').addEventListener('click',onSave);
+}
+
+/* ===== 表单校验 ===== */
+function hideAllErr(){ document.querySelectorAll('.form-item .err').forEach(function(e){ e.style.display='none'; }); }
+function showErr(id){ document.getElementById(id).style.display='block'; }
+
+function validate(){
+  hideAllErr();
+  var ok=true;
+  var carNo=document.getElementById('carNo').value.trim();
+  var owner=document.getElementById('owner').value.trim();
+  var phone=document.getElementById('phone').value.trim();
+  var cardType=document.getElementById('cardType').value.trim();
+  var fee=document.getElementById('fee').value;
+  var start=document.getElementById('startTime').value;
+  var end=document.getElementById('endTime').value;
+
+  if(!carNo || !regCar.test(carNo)){ showErr('errCar'); ok=false; }
+  if(!owner){ showErr('errOwner'); ok=false; }
+  if(!phone || !regPhone.test(phone)){ showErr('errPhone'); ok=false; }
+  if(!cardType){ showErr('errType'); ok=false; }
+  if(fee==='' || Number(fee)<0 || isNaN(Number(fee))){ showErr('errFee'); ok=false; }
+  if(!start){ showErr('errStart'); ok=false; }
+  if(!end){ showErr('errEnd'); ok=false; }
+  else if(start && end<=start){ showErr('errEnd'); ok=false; }
+  return ok;
+}
+
+/* ===== 保存：改数据源 → 持久化 → 跳转列表 ===== */
+function onSave(){
+  if(!validate()) return;
+  var list=getMonthCardList();
+  var carNo=document.getElementById('carNo').value.trim();
+  var owner=document.getElementById('owner').value.trim();
+  var phone=document.getElementById('phone').value.trim();
+  var cardType=document.getElementById('cardType').value.trim();
+  var fee=Number(document.getElementById('fee').value);
+  var start=document.getElementById('startTime').value;
+  var end=document.getElementById('endTime').value;
+  var status=getCardStatus(end);
+
+  if(isEdit){
+    var idx=list.findIndex(function(i){ return i.id===Number(editId); });
+    if(idx<0){ alert('数据不存在'); return; }
+    list[idx]={ id:Number(editId), carNo:carNo, owner:owner, phone:phone, cardType:cardType, fee:fee, startTime:start, endTime:end, status:status };
+    saveMonthCardList(list);
+    alert('编辑保存成功');
+  }else{
+    var newId=list.length? Math.max.apply(null,list.map(function(i){ return i.id; }))+1 : 1;
+    list.push({ id:newId, carNo:carNo, owner:owner, phone:phone, cardType:cardType, fee:fee, startTime:start, endTime:end, status:status });
+    saveMonthCardList(list);
+    alert('新增保存成功');
+  }
+  location.href='monthCard.html';
+}
+</script>
